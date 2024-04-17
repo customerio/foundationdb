@@ -283,6 +283,21 @@ func OpenDatabase(clusterFile string) (Database, error) {
 	return db, nil
 }
 
+// Open creates a database handle to the FoundationDB cluster for a cluster file.
+// Every call to this function will create a new Database handle.
+//
+// A single client can use this function multiple times to connect to different
+// clusters simultaneously, with each invocation requiring its own cluster file.
+// To connect to multiple clusters running at different, incompatible versions,
+// the multi-version client API must be used.
+func OpenDatabaseUncached(clusterFile string) (Database, error) {
+	if err := ensureNetworkIsStarted(); err != nil {
+		return Database{}, err
+	}
+
+	return createDatabase(clusterFile)
+}
+
 // ensureNetworkIsStarted starts the network if not already done and ensures that the API version is set.
 func ensureNetworkIsStarted() error {
 	networkMutex.Lock()
